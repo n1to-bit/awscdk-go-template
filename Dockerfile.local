@@ -1,0 +1,17 @@
+FROM golang:1.15.6-alpine3.12
+
+WORKDIR /go/src/app
+
+RUN apk add --no-cache \
+        alpine-sdk \
+        git \
+        postgresql-client \
+    && go get github.com/cespare/reflex
+
+# golang-migrate
+RUN curl -L https://github.com/golang-migrate/migrate/releases/download/v4.14.1/migrate.linux-amd64.tar.gz | tar xvz
+RUN mv ./migrate.linux-amd64 /usr/bin/migrate
+
+EXPOSE 8080
+
+CMD reflex -r '(\.go$|go\.mod)' -s go run cmd/awscdk-go-template/main.go
